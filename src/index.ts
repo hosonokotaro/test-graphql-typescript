@@ -1,42 +1,61 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express from 'express';
 import { graphqlHTTP } from 'express-graphql';
-import { buildSchema } from 'graphql';
+import { GraphQLObjectType, GraphQLString, GraphQLSchema } from 'graphql';
 
-// GraphQL schema
-// 埋め込みの GraphQL Schema をヒントするには #graphql を記述する
+// BuildSchema を使用しない場合
 
-const schema = buildSchema(`#graphql
-  type Query {
-    ip: String
-  }
-`);
-
-// Middleware
-
-const loggingMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  next();
-};
-
-// API endpoint
-
-const root = {
-  ip: (args: any, request: Request) => {
-    return request.ip;
+const fakeDatabase: any = {
+  a: {
+    id: 'a',
+    name: 'yamada',
+  },
+  b: {
+    id: 'b',
+    name: 'suzuki',
   },
 };
+
+// User type を定義する
+
+const userType = new GraphQLObjectType({
+  name: 'User',
+  fields: {
+    id: { type: GraphQLString },
+    name: { type: GraphQLString },
+  },
+});
+
+// Query type を定義する
+
+const queryType = new GraphQLObjectType({
+  name: 'Query',
+  fields: {
+    user: {
+      type: userType,
+      args: {
+        id: { type: GraphQLString },
+      },
+      resolve: (_, { id }) => {
+        console.log(id);
+        return fakeDatabase[id];
+      },
+    },
+  },
+});
+
+// Schema を作成する
+
+const schema = new GraphQLSchema({ query: queryType });
 
 // express
 
 const app = express();
 const port = 4000;
 
-app.use(loggingMiddleware);
-
 app.use(
   '/',
   graphqlHTTP({
     schema,
-    rootValue: root,
     graphiql: true,
   })
 );
