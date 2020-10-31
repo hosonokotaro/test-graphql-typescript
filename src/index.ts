@@ -43,66 +43,53 @@ const schema = buildSchema(`#graphql
   }
 `);
 
-// Message の class 実装
-
-class Message {
-  readonly id: string;
-  readonly content: string;
-  readonly author: string;
-
-  constructor(
-    id: string,
-    { content, author }: { content: string; author: string }
-  ) {
-    this.id = id;
-    this.content = content;
-    this.author = author;
-  }
-}
-
 // API endpoint
 
 // Realtime Database に置き換える
 // const fakeDatabase: any = {};
 
-type Input = {
-  content: string;
-  author: string;
-};
-
 const database = firebaseDefault.database();
 
+// const ref = path => firebase.database().ref(path)
+// const getValue = path => ref(path).once('value')
+// const mapSnapshotToEntities = snapshot => snapshot.val().map((value, id) => ({ id, ...value }))
+// const getEntities = path => getValue(path).then(mapSnapshotToEntities)
+
+// const resolvers = {
+//     Author: {
+//         posts(author) {
+//             return getEntities('posts').then(posts => filter(posts, { authorId: author.id }))
+//         },
+//     },
+
+//     Post: {
+//         author(post) {
+//             return getEntities('authors').then(posts => filter(authors, { id: authorId }))
+//         },
+//     },
+// };
+
+let fakeDatabase = {
+  id: '',
+  content: '',
+  author: '',
+};
+
 const root = {
-  // getMessage: ({ id }: { id: string }) => {
-  //   if (!fakeDatabase[id]) {
-  //     throw new Error(`no message exists with id ${id}`);
-  //   }
-
-  //   console.log(fakeDatabase);
-
-  //   return new Message(id, fakeDatabase[id]);
-  // },
-  createMessage: ({ input }: { input: Input }) => {
+  getMessage: () => {
+    return fakeDatabase;
+  },
+  createMessage: ({ input }: any) => {
     const id = Crypto.randomBytes(10).toString('hex');
 
-    database.ref('users/' + id).set({
+    fakeDatabase = {
       id,
-      input,
-    });
+      content: input.content,
+      author: input.author,
+    };
 
-    return new Message(id, input);
+    return fakeDatabase;
   },
-  // updateMessage: ({ id, input }: { id: string; input: Input }) => {
-  //   if (!fakeDatabase[id]) {
-  //     throw new Error(`no message exists with id ${id}`);
-  //   }
-
-  //   fakeDatabase[id] = input;
-
-  //   console.log(fakeDatabase);
-
-  //   return new Message(id, input);
-  // },
 };
 
 // express
