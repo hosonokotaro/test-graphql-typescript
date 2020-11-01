@@ -4,6 +4,8 @@ documents: null
 generates:
   src/types/graphql.ts:
     plugins:
+      - add:
+          content: '/* eslint-disable */'
       - 'typescript'
       - 'typescript-resolvers'
   ./graphql.schema.json:

@@ -1,7 +1,7 @@
 import express from 'express';
 import { graphqlHTTP } from 'express-graphql';
 import { buildSchema } from 'graphql';
-import { Message, MessageInput, QueryReadMessageArgs } from './types/graphql';
+import { Message, MessageInput, QueryMessageArgs } from './types/graphql';
 import Crypto from 'crypto';
 import * as firebase from 'firebase/app';
 
@@ -74,7 +74,7 @@ const root = {
         return snapshot.val();
       });
   },
-  message: ({ id }: QueryReadMessageArgs) => {
+  message: ({ id }: QueryMessageArgs) => {
     return databaseRef(id)
       .once('value')
       .then((snapshot) => {
@@ -91,7 +91,7 @@ const root = {
         return input;
       });
   },
-  deleteMessage: ({ id }: QueryReadMessageArgs) => {
+  deleteMessage: ({ id }: QueryMessageArgs) => {
     return databaseRef(id)
       .remove()
       .then((_) => {
