@@ -1,6 +1,7 @@
 import express from 'express';
 import { graphqlHTTP } from 'express-graphql';
 import { buildSchema } from 'graphql';
+import { Message, MessageInput, QueryReadMessageArgs } from './types/graphql';
 import Crypto from 'crypto';
 import * as firebase from 'firebase/app';
 
@@ -28,6 +29,12 @@ const schema = buildSchema(`#graphql
     author: String
   }
 
+  input MessageUpdate {
+    id: ID!
+    content: String
+    author: String
+  }
+
   type Message {
     id: ID!
     content: String
@@ -35,60 +42,61 @@ const schema = buildSchema(`#graphql
   }
 
   type Query {
-    getMessage(id: ID!): Message
+    message(id: ID!): Message
   }
 
   type Mutation {
     createMessage(input: MessageInput): Message
+    updateMessage(input: MessageUpdate): Message
+    deleteMessage(id: ID!): ID
   }
 `);
 
 // API endpoint
 
-// Realtime Database に置き換える
-// const fakeDatabase: any = {};
-
 const database = firebaseDefault.database();
+const databaseRef = (id: string) => database.ref(`posts/${id}`);
 
-// const ref = path => firebase.database().ref(path)
-// const getValue = path => ref(path).once('value')
-// const mapSnapshotToEntities = snapshot => snapshot.val().map((value, id) => ({ id, ...value }))
-// const getEntities = path => getValue(path).then(mapSnapshotToEntities)
-
-// const resolvers = {
-//     Author: {
-//         posts(author) {
-//             return getEntities('posts').then(posts => filter(posts, { authorId: author.id }))
-//         },
-//     },
-
-//     Post: {
-//         author(post) {
-//             return getEntities('authors').then(posts => filter(authors, { id: authorId }))
-//         },
-//     },
-// };
-
-let fakeDatabase = {
-  id: '',
-  content: '',
-  author: '',
-};
+// method name は Query, Mutation と同一の名前にする
 
 const root = {
-  getMessage: () => {
-    return fakeDatabase;
-  },
-  createMessage: ({ input }: any) => {
+  createMessage: ({ input }: { input: MessageInput }) => {
     const id = Crypto.randomBytes(10).toString('hex');
 
-    fakeDatabase = {
-      id,
+    databaseRef(id).set({
       content: input.content,
       author: input.author,
-    };
+    });
 
-    return fakeDatabase;
+    return databaseRef(id)
+      .once('value')
+      .then((snapshot) => {
+        return snapshot.val();
+      });
+  },
+  message: ({ id }: QueryReadMessageArgs) => {
+    return databaseRef(id)
+      .once('value')
+      .then((snapshot) => {
+        return snapshot.val();
+      });
+  },
+  updateMessage: ({ input }: { input: Message }) => {
+    return databaseRef(input.id)
+      .update({
+        content: input.content,
+        author: input.author,
+      })
+      .then((_) => {
+        return input;
+      });
+  },
+  deleteMessage: ({ id }: QueryReadMessageArgs) => {
+    return databaseRef(id)
+      .remove()
+      .then((_) => {
+        return id;
+      });
   },
 };
 
