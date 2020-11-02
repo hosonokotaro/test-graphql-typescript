@@ -1,62 +1,23 @@
 import express from 'express';
 import { graphqlHTTP } from 'express-graphql';
-import { buildSchema } from 'graphql';
 import { Message, MessageInput, QueryMessageArgs } from './types/graphql';
 import Crypto from 'crypto';
 import * as firebase from 'firebase/app';
+import schema from './schema';
+import firebaseConfig from './firebaseConfig';
 
 import 'firebase/database';
 
 // firebase settings
 
-const firebaseConfig = {
-  apiKey: 'AIzaSyB7k3FvoggUpNRl9NYeV4ACMedbMY3fXw4',
-  authDomain: 'test-realtime-database-2809f.firebaseapp.com',
-  databaseURL: 'https://test-realtime-database-2809f.firebaseio.com',
-  storageBucket: 'test-realtime-database-2809f.appspot.com',
-};
-
 // wip default を入れないと initializeApp 等のメソッドが存在しない
 const firebaseDefault = firebase.default;
 firebaseDefault.initializeApp(firebaseConfig);
 
-// GraphQL schema
-// 埋め込みの GraphQL Schema をヒントするには #graphql を記述する
-
-const schema = buildSchema(`#graphql
-  input MessageInput {
-    content: String
-    author: String
-  }
-
-  input MessageUpdate {
-    id: ID!
-    content: String
-    author: String
-  }
-
-  type Message {
-    id: ID!
-    content: String
-    author: String
-  }
-
-  type Query {
-    message(id: ID!): Message
-  }
-
-  type Mutation {
-    createMessage(input: MessageInput): Message
-    updateMessage(input: MessageUpdate): Message
-    deleteMessage(id: ID!): ID
-  }
-`);
+const databaseRef = (id: string) =>
+  firebaseDefault.database().ref(`posts/${id}`);
 
 // API endpoint
-
-const database = firebaseDefault.database();
-const databaseRef = (id: string) => database.ref(`posts/${id}`);
-
 // method name は Query, Mutation と同一の名前にする
 
 const root = {
