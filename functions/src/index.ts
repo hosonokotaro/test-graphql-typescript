@@ -25,10 +25,14 @@ const root = {
   createMessage: ({ input }: { input: MessageInput }) => {
     const id = Crypto.randomBytes(10).toString('hex');
 
-    databaseRef(id).set({
-      content: input.content,
-      author: input.author,
-    });
+    databaseRef(id)
+      .set({
+        content: input.content,
+        author: input.author,
+      })
+      .catch((error) => {
+        throw new Error(error);
+      });
 
     return databaseRef(id)
       .once('value')
