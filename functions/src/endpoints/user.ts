@@ -1,7 +1,7 @@
 import express from 'express';
 import { graphqlHTTP } from 'express-graphql';
 import { QueryMessageArgs } from '../types/graphql';
-import schema from '../schema';
+import schema from '../schema/userSchema';
 
 import databaseRef from './databaseRef';
 

@@ -2,7 +2,7 @@ import express from 'express';
 import { graphqlHTTP } from 'express-graphql';
 import { Message, MessageInput, QueryMessageArgs } from '../types/graphql';
 import Crypto from 'crypto';
-import schema from '../schema';
+import schema from '../schema/adminSchema';
 
 import databaseRef from './databaseRef';
 

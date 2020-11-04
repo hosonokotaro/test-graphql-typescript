@@ -1,5 +1,9 @@
 overwrite: true
-schema: 'http://localhost:5001/test-realtime-database-2809f/asia-northeast1/api'
+schema:
+  [
+    'http://localhost:5001/test-realtime-database-2809f/asia-northeast1/admin',
+    'http://localhost:5001/test-realtime-database-2809f/asia-northeast1/user',
+  ]
 documents: null
 generates:
   src/types/graphql.ts:
