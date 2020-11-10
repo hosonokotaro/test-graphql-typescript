@@ -5,7 +5,7 @@ import { buildSchema } from 'graphql';
 
 export default buildSchema(`#graphql
   type Message {
-    id: ID!
+    id: ID
     content: String
     author: String
   }

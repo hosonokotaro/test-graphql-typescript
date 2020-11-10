@@ -18,21 +18,21 @@ export type Scalars = {
 };
 
 export type MessageInput = {
-  author?: Maybe<Scalars['String']>;
   content?: Maybe<Scalars['String']>;
+  author?: Maybe<Scalars['String']>;
 };
 
 export type MessageUpdate = {
-  author?: Maybe<Scalars['String']>;
-  content?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
+  content?: Maybe<Scalars['String']>;
+  author?: Maybe<Scalars['String']>;
 };
 
 export type Message = {
   __typename?: 'Message';
   author?: Maybe<Scalars['String']>;
   content?: Maybe<Scalars['String']>;
-  id: Scalars['ID'];
+  id?: Maybe<Scalars['ID']>;
 };
 
 export type Query = {
@@ -47,20 +47,20 @@ export type QueryMessageArgs = {
 export type Mutation = {
   __typename?: 'Mutation';
   createMessage?: Maybe<Message>;
-  deleteMessage?: Maybe<Scalars['ID']>;
   updateMessage?: Maybe<Message>;
+  deleteMessage?: Maybe<Scalars['ID']>;
 };
 
 export type MutationCreateMessageArgs = {
   input?: Maybe<MessageInput>;
 };
 
-export type MutationDeleteMessageArgs = {
-  id: Scalars['ID'];
-};
-
 export type MutationUpdateMessageArgs = {
   input?: Maybe<MessageUpdate>;
+};
+
+export type MutationDeleteMessageArgs = {
+  id: Scalars['ID'];
 };
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
@@ -207,7 +207,7 @@ export type MessageResolvers<
 > = {
   author?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   content?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  id?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -233,17 +233,17 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationCreateMessageArgs, never>
   >;
-  deleteMessage?: Resolver<
-    Maybe<ResolversTypes['ID']>,
-    ParentType,
-    ContextType,
-    RequireFields<MutationDeleteMessageArgs, 'id'>
-  >;
   updateMessage?: Resolver<
     Maybe<ResolversTypes['Message']>,
     ParentType,
     ContextType,
     RequireFields<MutationUpdateMessageArgs, never>
+  >;
+  deleteMessage?: Resolver<
+    Maybe<ResolversTypes['ID']>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationDeleteMessageArgs, 'id'>
   >;
 };
 

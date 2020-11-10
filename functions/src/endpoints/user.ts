@@ -10,7 +10,10 @@ const rootUser = {
     return databaseRef(id)
       .once('value')
       .then((snapshot) => {
-        return snapshot.val();
+        return {
+          id: snapshot.key,
+          ...snapshot.val(),
+        };
       });
   },
 };

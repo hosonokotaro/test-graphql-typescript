@@ -22,14 +22,20 @@ const rootAdmin = {
     return databaseRef(id)
       .once('value')
       .then((snapshot) => {
-        return snapshot.val();
+        return {
+          id: snapshot.key,
+          ...snapshot.val(),
+        };
       });
   },
   message: ({ id }: QueryMessageArgs) => {
     return databaseRef(id)
       .once('value')
       .then((snapshot) => {
-        return snapshot.val();
+        return {
+          id: snapshot.key,
+          ...snapshot.val(),
+        };
       });
   },
   updateMessage: ({ input }: { input: Message }) => {
